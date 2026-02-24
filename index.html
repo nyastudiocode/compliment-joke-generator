@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ultimate Compliment Machine</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&family=Nunito:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS Reset & Base Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Animated Gradient Background */
+            background: linear-gradient(-45deg, #FF6B6B, #FFD166, #4ECDC4, #45B7D1);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #212529;
+            font-family: 'Lato', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Floating Particles --- */
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 4s ease-in infinite;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- Vertical Layout Container --- */
+        .app-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 400px; /* Thinner, vertical profile */
+            min-height: 550px;
+            padding: 3rem 2rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            border: 4px solid #ffffff;
+        }
+
+        /* --- Visual Flourish --- */
+        .icon-header {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));
+        }
+
+        /* --- Compliment Display --- */
+        .display-area {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        #compliment-text {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.8rem;
+            line-height: 1.3;
+            font-weight: 800;
+            color: #212529;
+            background: linear-gradient(120deg, #FF6B6B, #FF8E53);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Animation class for new text */
+        .pop-in {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5) rotate(-5deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        /* --- Button Styling --- */
+        .btn-generate {
+            background: #FF6B6B;
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0 #D64545;
+            position: relative;
+            top: 0;
+        }
+
+        .btn-generate:hover {
+            background: #FF8E53;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 0 #D64545;
+        }
+
+        .btn-generate:active {
+            top: 6px;
+            box-shadow: 0 2px 0 #D64545;
+        }
+
+        /* --- Confetti Elements --- */
+        .emoji-burst {
+            position: absolute;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: burst 0.8s ease-out forwards;
+        }
+
+        @keyframes burst {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 400px) {
+            .app-container {
+                min-height: 480px;
+                padding: 2rem 1.5rem;
+            }
+            #compliment-text { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="app-container">
+        <div class="icon-header">✨</div>
+        
+        <div class="display-area">
+            <h1 id="compliment-text">You're about to feel awesome.</h1>
+        </div>
+
+        <button id="get-compliment-btn" class="btn-generate">
+            Boost My Mood!
+        </button>
+    </main>
+
+    <script>
+        const compliments = [
+            "You’re like the ‘skip intro’ button on Netflix. Pure joy.",
+            "If you were a vegetable, you’d be a 'cute-cumber.'",
+            "You’re even better than a triple-scoop ice cream cone. With sprinkles.",
+            "I bet you’re the person everyone wants on their trivia team.",
+            "You have the kind of energy that makes people want to high-five random strangers.",
+            "You’re smarter than Google and way more attractive.",
+            "You’re like a high-speed Wi-Fi connection in a world of dial-up.",
+            "Is it even legal to be this awesome?",
+            "Your brain is fascinating. Like, documentary-worthy fascinating.",
+            "You're the person people think of when they hear 'good vibes only'.",
+            "If you were a fruit, you'd be a fine-apple.",
+            "You're like a cool breeze on a humid day.",
+            "You have impeccable taste in everything.",
+            "You’re the human equivalent of a Saturday morning.",
+            "I’d share my last slice of pizza with you. That's a big deal.",
+            "You’re more fun than a ball pit full of puppies.",
+            "Your jokes are so funny they should come with a warning label.",
+            "You’re that one person who actually reads the terms and conditions. Legend.",
+            "You have a great soul.",
+            "You’re like the fancy soap people keep for guests but never use.",
+            "Your smile is contagious—in a good, non-medical way.",
+            "If being awesome was a crime, you'd be doing life.",
+            "You’re the main character. Everyone else is just an NPC.",
+            "You make ordinary things feel extraordinary.",
+            "Your kindness is your superpower.",
+            "You’re the cherry on top of the world's best sundae.",
+            "I bet you make babies smile just by looking at them.",
+            "You’re proof that magic exists in the real world.",
+            "You’re like a really great hug, but in human form.",
+            "You have the confidence of a cat walking on a keyboard.",
+            "Everything is better when you're in the room.",
+            "You're cooler than a polar bear's toenails.",
+            "Your existence is the best plot twist ever.",
+            "You’re basically a sunshine-powered superhero.",
+            "You make the rest of us look like we’re trying too hard.",
+            "You are a limited edition. There’s only one of you!",
+            "I’d trust you with my Wi-Fi password.",
+            "You have a heart of gold (and probably some chocolate too).",
+            "You’re like the fresh side of the pillow.",
+            "You’re a literal ray of light.",
+            "You’re the MVP of being a human being.",
+            "Your creative mind is a national treasure.",
+            "You handle 'adulting' with such grace. How?",
+            "You’re the reason someone smiled today.",
+            "You have a very pleasing facial symmetry.",
+            "You’re as sweet as a doughnut, but without the calories.",
+            "You’re like a dictionary—you add meaning to my life.",
+            "If you were a candle, the scent would be 'Pure Success'.",
+            "You’re a star, and the world is your stage.",
+            "You're more legendary than a unicorn.",
+            "You could survive a zombie apocalypse easily.",
+            "Your style is so on point it hurts.",
+            "You’re the best thing since sliced bread. No, better.",
+            "You make me want to be a better person, or at least a cooler one.",
+            "You’re the 'and' in 'bacon and eggs'. Essential.",
+            "Your laugh is my favorite soundtrack.",
+            "You have a way of making people feel seen.",
+            "You’re basically a human 5-star review.",
+            "You’re as reliable as a Swiss watch.",
+            "You’re the spark that starts the fire.",
+            "You’re like a rainbow after a very annoying rainstorm.",
+            "You are 100% organic, grass-fed awesomeness.",
+            "You’re the secret ingredient in the recipe of life.",
+            "You’re a wizard, but without the weird hat.",
+            "You have the patience of a saint (or someone with really slow internet).",
+            "You’re the beat in the heart of the world.",
+            "You're like a really good plot development.",
+            "You’re a masterclass in being cool.",
+            "Your eyes have a literal sparkle. How do you do that?",
+            "You’re more refreshing than a cold lemonade.",
+            "You’re the upgrade we all needed.",
+            "You’re a work of art. The Louvre is calling.",
+            "You’re like finding a $20 bill in your pocket.",
+            "You are the definition of 'killing it'.",
+            "You’re as charming as a Disney prince/princess.",
+            "You’re the glue that holds everything together.",
+            "You’re like the first snow of winter (the pretty kind).",
+            "You are a bold font in a world of italics.",
+            "You’re the personification of a 'Good Morning' text.",
+            "You have a vibe that can't be bought.",
+            "You’re the 'Add to Cart' button of people.",
+            "You’re more vibrant than a box of 64 crayons.",
+            "You’re the high score in the game of life.",
+            "You’re like a fresh pair of socks. So satisfying.",
+            "You are the human version of a cozy fireplace.",
+            "You have a spirit that can't be tamed.",
+            "You’re a whole mood, and it’s a great one.",
+            "You’re the disco ball at every party.",
+            "You’re like a perfectly timed joke.",
+            "You make everyone’s day 10% brighter just by being there.",
+            "You’re a cosmic masterpiece.",
+            "You’re the hero we need right now.",
+            "You’re like a pop of color in a black and white movie.",
+            "You have the wisdom of a very chill turtle.",
+            "You’re a total trendsetter.",
+            "You’re the reason unicorns believe in humans.",
+            "You’re the 'extra' in 'extraordinary'.",
+            "You are a beacon of hope and snacks.",
+            "You’re the best version of yourself, and it’s amazing.",
+            "You’re simply the best."
+        ];
+
+        const textDisplay = document.getElementById('compliment-text');
+        const generateBtn = document.getElementById('get-compliment-btn');
+        let lastIndex = -1;
+
+        // --- Confetti / Emoji Effect ---
+        function createBurst() {
+            const emojis = ['💖', '✨', '🎈', '🔥', '🌈', '🍭', '⭐'];
+            const container = document.querySelector('.app-container');
+            
+            for (let i = 0; i < 12; i++) {
+                const span = document.createElement('span');
+                span.className = 'emoji-burst';
+                span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                const x = (Math.random() - 0.5) * 300;
+                const y = (Math.random() - 0.5) * 300;
+                
+                span.style.setProperty('--x', `${x}px`);
+                span.style.setProperty('--y', `${y}px`);
+                span.style.left = '50%';
+                span.style.top = '50%';
+                
+                container.appendChild(span);
+                setTimeout(() => span.remove(), 800);
+            }
+        }
+
+        // --- Background Sparkle Effect ---
+        function createBackgroundSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.innerHTML = '✦';
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = '110vh';
+            sparkle.style.color = 'white';
+            sparkle.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 4000);
+        }
+
+        function generateNewCompliment() {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * compliments.length);
+            } while (randomIndex === lastIndex);
+
+            lastIndex = randomIndex;
+            
+            textDisplay.classList.remove('pop-in');
+            void textDisplay.offsetWidth; // Reflow
+            
+            textDisplay.textContent = compliments[randomIndex];
+            textDisplay.classList.add('pop-in');
+            
+            createBurst();
+        }
+
+        // Initialize
+        setInterval(createBackgroundSparkle, 300);
+        generateBtn.addEventListener('click', generateNewCompliment);
+    </script>
+</body>
+</html>
